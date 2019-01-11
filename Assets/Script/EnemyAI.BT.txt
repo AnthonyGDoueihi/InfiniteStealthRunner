@@ -1,0 +1,42 @@
+tree("Root")
+	fallback
+		tree("Attack")
+		tree("LookAround")
+		tree("Wander")
+			
+tree("Wander")
+	sequence
+		PickRandomDestination
+		MoveToDestination
+
+tree("LookAround")
+	sequence
+		random(5,1,1,1)
+			Turn(90.0)
+			Turn(-90.0)
+			Turn(145.0)
+			Turn(-27.0)
+		LookAtTarget
+		WaitRandom(2.0,5.0)
+		random (3,1)
+			Fail
+			Succeed
+
+
+tree("Attack")
+	while SeePlayer
+		sequence
+			TargetPlayer
+			LookAtTarget
+			fallback
+				while ShotLinedUp
+					sequence
+						Wait(0.5)
+						Fire
+				while not ShotLinedUp
+					sequence
+						SetTargetDestination
+						MoveToDestination
+
+
+

@@ -33,13 +33,35 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
+        anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         camArm = GameObject.FindWithTag("CameraArm");
     }
 
     // Update is called once per frame
     void Update()
+    {
+        PlayerMovements();
+        CameraMovements();
+
+    }
+
+    private void CameraMovements()
+    {
+        //Camera Movements
+        float mouseX = Input.GetAxis("Mouse X") * camXSpeed;
+        transform.Rotate(new Vector3(0, mouseX, 0));
+
+        float mouseY = -Input.GetAxis("Mouse Y") * camYSpeed;
+        camArm.transform.Rotate(mouseY, 0, 0);
+
+        if (camArm.transform.localEulerAngles.x < 320 && camArm.transform.localEulerAngles.x > 50)
+            camArm.transform.localEulerAngles = new Vector3(320, camArm.transform.localEulerAngles.y, camArm.transform.localEulerAngles.z);
+        if (camArm.transform.localEulerAngles.x > 30 && camArm.transform.localEulerAngles.x < 300)
+            camArm.transform.localEulerAngles = new Vector3(30, camArm.transform.localEulerAngles.y, camArm.transform.localEulerAngles.z);
+    }
+
+    private void PlayerMovements()
     {
         //Player Movements
         float forward = Input.GetAxis("Vertical");
@@ -56,32 +78,19 @@ public class PlayerController : MonoBehaviour
         if (isRunning && isCrouched) isCrouched = false;
 
 
-        if (isRunning) { move = direction * runSpeed * Time.deltaTime; }
+        if (isRunning) { move = new Vector3(0, 0, forward) * runSpeed * Time.deltaTime; }
         else if (isCrouched) { move = direction * crouchSpeed * Time.deltaTime; }
         else move = direction * walkSpeed * Time.deltaTime;
 
-            transform.Translate(move);
-
-        //Camera Movements
-        float mouseX = Input.GetAxis("Mouse X") * camXSpeed;
-        transform.Rotate(new Vector3(0, mouseX, 0));
-
-        float mouseY = -Input.GetAxis("Mouse Y") * camYSpeed;
-        camArm.transform.Rotate(mouseY, 0, 0);
-
-        if (camArm.transform.localEulerAngles.x < 320 && camArm.transform.localEulerAngles.x > 50)
-            camArm.transform.localEulerAngles = new Vector3(320, camArm.transform.localEulerAngles.y, camArm.transform.localEulerAngles.z);
-        if (camArm.transform.localEulerAngles.x > 30 && camArm.transform.localEulerAngles.x < 300)
-            camArm.transform.localEulerAngles = new Vector3(30, camArm.transform.localEulerAngles.y, camArm.transform.localEulerAngles.z);
+        transform.Translate(move);
 
         //Animator Movements
         isMoving = new Vector3(horizontal, 0, forward).magnitude > 0.2f;
-        
+
         anim.SetBool("isMoving", isMoving);
         anim.SetBool("isRunning", isRunning);
         anim.SetBool("isCrouched", isCrouched);
         anim.SetFloat("velocityY", velocityY);
         anim.SetFloat("velocityX", velocityX);
-
     }
 }
