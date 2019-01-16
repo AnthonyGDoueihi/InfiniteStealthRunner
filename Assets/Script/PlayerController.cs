@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     Animator anim;
     Rigidbody rigid;
     GameObject camArm;
+    CanvasController canvas;
 
     //Movement Parameters
     [SerializeField]
@@ -21,21 +22,25 @@ public class PlayerController : MonoBehaviour
     float camXSpeed = 10.0f;
 
     //Animator Parameters
-    bool isMoving;
-    bool isRunning;
-    bool isCrouched;
+    public bool isMoving;
+    public bool isRunning;
+    public bool isCrouched;
     [Range(-1, 1)]
     float velocityY;
     float velocityX;
 
+    public int life = 3;
+    public int areasPassed = 0;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        Time.timeScale = 1;
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         camArm = GameObject.FindWithTag("CameraArm");
+        canvas = FindObjectOfType<CanvasController>();
     }
 
     // Update is called once per frame
@@ -92,5 +97,21 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("isCrouched", isCrouched);
         anim.SetFloat("velocityY", velocityY);
         anim.SetFloat("velocityX", velocityX);
+    }
+
+    public void HitByBullet()
+    {
+        life--;
+        canvas.HitByBullet();
+        if(life <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        canvas.GameOver();
+        Time.timeScale = 0;
     }
 }

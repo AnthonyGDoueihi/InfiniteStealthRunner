@@ -14,42 +14,65 @@ public class EnemyAI : MonoBehaviour
     NavMeshAgent agent;
     public Vector3 destination; // The movement destination.
     public Vector3 target;      // The position to aim to.
-    float rotSpeed = 5.0f;
+    float rotSpeed = 20.0f;
 
-    float visibleRange = 10.0f;
+    float visibleRange = 30.0f;
     float shotRange = 10.0f;
+    float visibleAngle = 20.0f;
+
+    float hearRunRange = 30.0f;
+    float hearWalkRange = 10.0f;
+    float hearSneakRange = 3.0f;
 
     Vector2 smoothDeltaPosition = Vector2.zero;
     Vector2 velocity = Vector2.zero;
+
+    public bool seePlayer = false;
+    public bool hearPlayer = false;
+
+    bool canFire = false;
+    float recharge = 0;
+    float reloadTime = 1.0f;
 
     void Start()
     {
         agent = this.GetComponent<NavMeshAgent>();
         agent.stoppingDistance = shotRange - 5; //for a little buffer
         agent.updatePosition = false;
-        anim = GetComponentInChildren<Animator>();        
+        anim = GetComponentInChildren<Animator>();
+        player = FindObjectOfType<PlayerController>().transform;
     }
 
     void Update()
     {
+        Animations();
+
+        if (!canFire)
+        {
+            recharge -= Time.deltaTime;
+            if (recharge <= 0)
+            {
+                canFire = true;
+            }
+        }
+    }
+
+    private void Animations()
+    {
         Vector3 worldDeltaPosition = agent.nextPosition - transform.position;
 
-        // Map 'worldDeltaPosition' to local space
         float dx = Vector3.Dot(transform.right, worldDeltaPosition);
         float dy = Vector3.Dot(transform.forward, worldDeltaPosition);
         Vector2 deltaPosition = new Vector2(dx, dy);
 
-        // Low-pass filter the deltaMove
         float smooth = Mathf.Min(1.0f, Time.deltaTime / 0.15f);
         smoothDeltaPosition = Vector2.Lerp(smoothDeltaPosition, deltaPosition, smooth);
 
-        // Update velocity if time advances
         if (Time.deltaTime > 1e-5f)
             velocity = smoothDeltaPosition / Time.deltaTime;
 
         bool shouldMove = velocity.magnitude > 0.5f && agent.remainingDistance > agent.radius;
 
-        // Update animation parameters
         anim.SetBool("isMoving", shouldMove);
         anim.SetFloat("velocityX", velocity.x);
         anim.SetFloat("velocityY", velocity.y);
@@ -61,20 +84,11 @@ public class EnemyAI : MonoBehaviour
     void PickRandomDestination()
     {
         Vector3 dest = new Vector3(Random.Range(0, 30), 0, Random.Range(0, 30));
-        agent.SetDestination(dest);
-        Task.current.Succeed();
-    }
-
-    [Task]
-    void MoveToDestination()
-    {
-        if (Task.isInspected)
-            Task.current.debugInfo = string.Format("t={0:0.00}", Time.time);
-
         if (agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
         {
-            Task.current.Succeed();
+            agent.SetDestination(dest);
         }
+        Task.current.Succeed();
     }
 
     [Task]
@@ -104,8 +118,13 @@ public class EnemyAI : MonoBehaviour
     [Task]
     bool Fire()
     {
+        if (canFire)
+        { 
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawn.transform.position, bulletSpawn.transform.rotation);
-        bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * 2000);
+        bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * 500f);
+        recharge = reloadTime;
+        canFire = false;
+        }
         return true;
     }
 
@@ -119,7 +138,7 @@ public class EnemyAI : MonoBehaviour
 
         if (Physics.Raycast(transform.position, distance, out hit))
         {
-            if (hit.collider.gameObject.tag == "Props")
+            if (hit.collider.gameObject.tag == "Props" || hit.collider.gameObject.tag == "EndArea")
             {
                 seeProps = true;
             }
@@ -128,9 +147,46 @@ public class EnemyAI : MonoBehaviour
         if (Task.isInspected)
             Task.current.debugInfo = string.Format("Props = {0}", seeProps);
 
-        if (distance.magnitude < visibleRange && !seeProps)
+        if (distance.magnitude < visibleRange && !seeProps && Vector3.Angle(transform.forward, distance) < visibleAngle)
+        {
+            seePlayer = true;
             return true;
-        else return false;
+        }
+        else
+        {
+            seePlayer = false;
+            return false;
+        }
+
+    }
+
+    [Task]
+    bool HearPlayer()
+    {
+        Vector3 distance = player.transform.position - transform.position;
+        PlayerController playerCon = player.GetComponent<PlayerController>();
+
+        if (playerCon.isRunning && distance.magnitude < hearRunRange)
+        {
+            hearPlayer = true;
+            return true;
+        }
+        else if (playerCon.isCrouched && distance.magnitude < hearSneakRange)
+        {
+            hearPlayer = true;
+            return true;
+        }
+        else if (playerCon.isMoving && distance.magnitude < hearWalkRange)
+        {
+            hearPlayer = true;
+            return true;
+        }
+        else
+        {
+            hearPlayer = false;
+            return false;
+        }
+
     }
 
     [Task]
@@ -152,8 +208,10 @@ public class EnemyAI : MonoBehaviour
     bool ShotLinedUp()
     {
         Vector3 distance = target - transform.position;
-        if (distance.magnitude < shotRange && Vector3.Angle(transform.forward, distance) < 1.0f)
+
+        if (distance.magnitude < shotRange && Vector3.Angle(transform.forward, distance) < 3.0f)
             return true;
         else return false;
     }
+
 }

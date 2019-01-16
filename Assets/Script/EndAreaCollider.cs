@@ -33,6 +33,7 @@ public class EndAreaCollider : MonoBehaviour
                     GetComponentInParent<ChunkController>().EndTriggered();
                 }
                 isTriggered = true;
+                other.GetComponent<PlayerController>().areasPassed ++;
             }
         }
     }

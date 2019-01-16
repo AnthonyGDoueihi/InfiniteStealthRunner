@@ -1,13 +1,13 @@
 tree("Root")
 	fallback
 		tree("Attack")
+		tree ("Hearing")
 		tree("LookAround")
 		tree("Wander")
 			
 tree("Wander")
 	sequence
 		PickRandomDestination
-		MoveToDestination
 
 tree("LookAround")
 	sequence
@@ -31,12 +31,21 @@ tree("Attack")
 			fallback
 				while ShotLinedUp
 					sequence
-						Wait(0.5)
 						Fire
 				while not ShotLinedUp
 					sequence
 						SetTargetDestination
-						MoveToDestination
+
+tree("Hearing")
+	while HearPlayer
+		sequence
+			TargetPlayer
+			SetTargetDestination
+			LookAtTarget
+		
+
+
+
 
 
 
