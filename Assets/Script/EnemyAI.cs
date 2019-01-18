@@ -10,29 +10,31 @@ public class EnemyAI : MonoBehaviour
     public Transform bulletSpawn;
     public GameObject bulletPrefab;
 
+    //Animation Declarations
     Animator anim;
     NavMeshAgent agent;
-    public Vector3 destination; // The movement destination.
-    public Vector3 target;      // The position to aim to.
+    public Vector3 destination; 
+    public Vector3 target;    
     float rotSpeed = 20.0f;
+    Vector2 smoothDeltaPosition = Vector2.zero;
+    Vector2 velocity = Vector2.zero;
 
+    // AI Declarations
     float visibleRange = 30.0f;
     float shotRange = 10.0f;
     float visibleAngle = 20.0f;
-
-    float hearRunRange = 30.0f;
-    float hearWalkRange = 10.0f;
+    float hearWalkRange = 15.0f;
     float hearSneakRange = 3.0f;
 
-    Vector2 smoothDeltaPosition = Vector2.zero;
-    Vector2 velocity = Vector2.zero;
+    //Firing Declarations
+    bool canFire = false;
+    float recharge = 0;
+    float reloadTime = 1.0f;
 
     public bool seePlayer = false;
     public bool hearPlayer = false;
 
-    bool canFire = false;
-    float recharge = 0;
-    float reloadTime = 1.0f;
+
 
     void Start()
     {
@@ -80,6 +82,8 @@ public class EnemyAI : MonoBehaviour
         transform.position = agent.nextPosition;
     }
 
+    // Panda Behaviour Tree tasks
+
     [Task]
     void PickRandomDestination()
     {
@@ -116,16 +120,15 @@ public class EnemyAI : MonoBehaviour
     }
 
     [Task]
-    bool Fire()
+    void Fire()
     {
         if (canFire)
         { 
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawn.transform.position, bulletSpawn.transform.rotation);
-        bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * 500f);
         recharge = reloadTime;
         canFire = false;
         }
-        return true;
+        Task.current.Succeed();
     }
 
     [Task]
@@ -136,7 +139,7 @@ public class EnemyAI : MonoBehaviour
         RaycastHit hit;
         bool seeProps = false;
 
-        if (Physics.Raycast(transform.position, distance, out hit))
+        if (Physics.Raycast(transform.position + new Vector3(0, 1, 0), distance, out hit))
         {
             if (hit.collider.gameObject.tag == "Props" || hit.collider.gameObject.tag == "EndArea")
             {
@@ -147,16 +150,18 @@ public class EnemyAI : MonoBehaviour
         if (Task.isInspected)
             Task.current.debugInfo = string.Format("Props = {0}", seeProps);
 
-        if (distance.magnitude < visibleRange && !seeProps && Vector3.Angle(transform.forward, distance) < visibleAngle)
+        if (distance.magnitude < visibleRange && !seeProps && (Vector3.Angle(transform.forward, distance) < visibleAngle || distance.magnitude < 3))
         {
             seePlayer = true;
-            return true;
         }
         else
         {
             seePlayer = false;
-            return false;
         }
+
+        print(distance.magnitude);
+        return seePlayer;
+
 
     }
 
@@ -166,12 +171,8 @@ public class EnemyAI : MonoBehaviour
         Vector3 distance = player.transform.position - transform.position;
         PlayerController playerCon = player.GetComponent<PlayerController>();
 
-        if (playerCon.isRunning && distance.magnitude < hearRunRange)
-        {
-            hearPlayer = true;
-            return true;
-        }
-        else if (playerCon.isCrouched && distance.magnitude < hearSneakRange)
+
+        if (playerCon.isCrouched && distance.magnitude < hearSneakRange)
         {
             hearPlayer = true;
             return true;
@@ -190,11 +191,11 @@ public class EnemyAI : MonoBehaviour
     }
 
     [Task]
-    bool Turn(float angle)
+    void Turn(float angle)
     {
         var p = transform.position + Quaternion.AngleAxis(angle, Vector3.up) * transform.forward;
         target = p;
-        return true;
+        Task.current.Succeed();
     }
 
     [Task]

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class CanvasController : MonoBehaviour
 {
+    //To create and visualise all scores kept by the player
+
     public Image lifeImage;
     public Text areaNumber;
     public GameObject gameOverFolder;
@@ -48,15 +50,5 @@ public class CanvasController : MonoBehaviour
     public void GameOver()
     {
         gameOverFolder.SetActive(true);
-    }
-
-    public void RestartClicked()
-    {
-
-    }
-
-    public void MainMenuClicked()
-    {
-
     }
 }

@@ -13,14 +13,14 @@ public class EnemyUI : MonoBehaviour
     EnemyAI enemy;
     Image image;
 
-    // Start is called before the first frame update
+    //All to visualise awareness
+
     void Start()
     {
         enemy = GetComponentInParent<EnemyAI>();
         image = GetComponentInChildren<Image>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (enemy.seePlayer)

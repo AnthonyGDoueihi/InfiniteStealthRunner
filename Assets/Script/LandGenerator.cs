@@ -39,6 +39,7 @@ public class LandGenerator : MonoBehaviour
         chunksLoaded.RemoveAt(0);
     }
 
+    //Creates Chunk Controller which handles the rest
     void SpawnNextChunk()
     {
         Vector3 chunkPosition = new Vector3(0, 0, chunkNumber * 30);
@@ -49,6 +50,7 @@ public class LandGenerator : MonoBehaviour
         chunkNumber++;
     }
 
+    //No Objects or Enemies in the way
     void SpawnStartingChunk()
     {
         Vector3 chunkPosition = new Vector3(0, 0, 0);

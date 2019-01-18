@@ -6,28 +6,33 @@ using UnityEngine.AI;
 
 public class ChunkController : MonoBehaviour
 {
-    public int chunkNumber;
+    public int chunkNumber; //To Control Spawn Location
 
+    // All objects to Spawn Declaration
     public GameObject buildingPrefab;
     public GameObject[] propsPrefab;
     public GameObject enemyPrefab;
+    public GameObject centerWallsPrefab;
 
-    EndAreaCollider endArea;
-    
-    int propsToSpawn = 5;
-    int enemiesToSpawn = 2;
 
+    //Number of objects to Instantiate     
+    int propsToSpawn;
+    int enemiesToSpawn;
+    float centreWallPercentageChance = 20f;
+
+    GameObject centerWalls = null;
     GameObject building = null;
 
     // Start is called before the first frame update
     void Start()
     {
+        enemiesToSpawn = 1 + Mathf.RoundToInt(0.05f * chunkNumber);
+        propsToSpawn = 10 - Mathf.RoundToInt(chunkNumber * 0.2f * Mathf.PerlinNoise(chunkNumber, enemiesToSpawn));
+
+
         SpawnBuilding();
         SpawnEnemies();
-        endArea = GetComponentInChildren<EndAreaCollider>();
-
-        propsToSpawn = 15 - Mathf.RoundToInt(chunkNumber * 0.2f);
-        enemiesToSpawn = 1 + Mathf.RoundToInt(chunkNumber * 0.1f);
+        
     }
 
     // Update is called once per frame
@@ -39,11 +44,23 @@ public class ChunkController : MonoBehaviour
     void SpawnBuilding()
     {
 
-       building = Instantiate(buildingPrefab, transform.position, Quaternion.identity, transform);
+        building = Instantiate(buildingPrefab, transform.position, Quaternion.identity, transform);
+        centerWalls = Instantiate(centerWallsPrefab, transform.position, Quaternion.identity, transform);
 
+        //Spawn Walls in the Centre
+        foreach (Transform c in centerWalls.transform)
+        {
+            if(Random.Range(0, 100) > centreWallPercentageChance)
+            {
+                Destroy(c.gameObject);
+            }
+        }
+
+        //Spawn Props
         for (int x = propsToSpawn; x > 0; x--)
         {
-            bool repeat = true;
+            bool repeat = true;  //Continue looping until it will not spawn ontop of another object
+
             while (repeat)
             {
                 float xPos = Random.Range(0f, 30f);
@@ -60,6 +77,8 @@ public class ChunkController : MonoBehaviour
                 }
             }
         }
+
+        //To make the NavMesh Agents see the objects created
         building.GetComponentInChildren<NavMeshSurface>().BuildNavMesh();
     }
 
@@ -67,7 +86,7 @@ public class ChunkController : MonoBehaviour
     {
         for (int x = enemiesToSpawn; x > 0; x--)
         {
-            bool repeat = true;
+            bool repeat = true; //Continue looping until it will not spawn ontop of another object
             while (repeat)
             {
                 float xPos = Random.Range(0f, 30f);
@@ -89,7 +108,7 @@ public class ChunkController : MonoBehaviour
     {
         if (chunkNumber != 0)
         {
-            FindObjectOfType<LandGenerator>().NewAreaHit();
+            FindObjectOfType<LandGenerator>().NewAreaHit(); //Passes detection to game controller
         }
     }
 }

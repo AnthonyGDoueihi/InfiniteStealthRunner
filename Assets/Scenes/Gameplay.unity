@@ -426,6 +426,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8054849272141221753, guid: e22803ae0ef18964aaa66ba4b1224c10,
+        type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e22803ae0ef18964aaa66ba4b1224c10, type: 3}
 --- !u!1001 &8663386626885754792
@@ -597,6 +602,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8527858930187931030, guid: 4e8da54a5622c594a8d625dd9db8c0ff,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8527858930187931030, guid: 4e8da54a5622c594a8d625dd9db8c0ff,
+        type: 3}
       propertyPath: m_Colors.m_HighlightedColor.r
       value: 1
       objectReference: {fileID: 0}
@@ -609,6 +619,51 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8527858930187931030, guid: 4e8da54a5622c594a8d625dd9db8c0ff,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8527858930187931030, guid: 4e8da54a5622c594a8d625dd9db8c0ff,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8527858930187931030, guid: 4e8da54a5622c594a8d625dd9db8c0ff,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 997839607}
+    - target: {fileID: 8527858930187931030, guid: 4e8da54a5622c594a8d625dd9db8c0ff,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LoadMainMenu
+      objectReference: {fileID: 0}
+    - target: {fileID: 8527858930187931030, guid: 4e8da54a5622c594a8d625dd9db8c0ff,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8663386627617600332, guid: 4e8da54a5622c594a8d625dd9db8c0ff,
+        type: 3}
+      propertyPath: m_ScreenMatchMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8663386627349401029, guid: 4e8da54a5622c594a8d625dd9db8c0ff,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8663386627349401029, guid: 4e8da54a5622c594a8d625dd9db8c0ff,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.98983914
+      objectReference: {fileID: 0}
+    - target: {fileID: 8663386627349401029, guid: 4e8da54a5622c594a8d625dd9db8c0ff,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.6745283
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e8da54a5622c594a8d625dd9db8c0ff, type: 3}

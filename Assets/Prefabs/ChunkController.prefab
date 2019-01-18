@@ -54,3 +54,5 @@ MonoBehaviour:
   - {fileID: 8845588342189216709, guid: f413f94bf63d7eb45a052d972db31a49, type: 3}
   enemyPrefab: {fileID: 4591900345745266909, guid: e545d8612cdba454e9a0b02f9d203f93,
     type: 3}
+  centerWallsPrefab: {fileID: 4784283561208004638, guid: d84e4318d1439e44ca8ff4390a0b8939,
+    type: 3}

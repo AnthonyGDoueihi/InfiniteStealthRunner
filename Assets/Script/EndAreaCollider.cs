@@ -23,6 +23,7 @@ public class EndAreaCollider : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        //Showing the player made it through, only once
         if(other.tag == "Player")
         {
             if (!isTriggered)
@@ -30,7 +31,7 @@ public class EndAreaCollider : MonoBehaviour
                 mat.color = new Color(0, 1, 0, 0.3f);
                 if (GetComponentInParent<ChunkController>())
                 {
-                    GetComponentInParent<ChunkController>().EndTriggered();
+                    GetComponentInParent<ChunkController>().EndTriggered(); //Passes detection to Parent Controller
                 }
                 isTriggered = true;
                 other.GetComponent<PlayerController>().areasPassed ++;
